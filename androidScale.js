@@ -79,13 +79,15 @@ function createAllSmaller(inFile, sourcePxWidth, sourceScaling) {
 		targetPxWidth = Math.round(sourcePxWidth * factor);
 
 		console.log("Writing " + targetFile + ", width: " + targetPxWidth + "px");
-		if (targetScaling.dpi >= sourceScaling.dpi) { 
-			fs.createReadStream(inFile).pipe(fs.createWriteStream(targetFile)); // True for first in 50% of cases
+		if (targetScaling.dpi >= sourceScaling.dpi) {  // True for first in 50% of cases
+			fs.writeFileSync(targetFile, fs.readFileSync(inFile));
 		} else { 
 			// Use imagemagick to rescale
-			var cmdLine = "convert -resize " + targetPxWidth + " " + inFile + " " + targetFile;
-			ps.execSync(cmdLine);
+			var resizeCmdLine = "convert -resize " + targetPxWidth + " " + inFile + " " + targetFile;
+			ps.execSync(resizeCmdLine);
 		}
+		// Use optipng to minimize file size (lossless)
+		ps.execSync("optipng " + targetFile);
 	}
 } 
 
