@@ -99,6 +99,5 @@ function findNearestScaling(dpi) {
 			return scaling;
 		}
 	}
+	return dpiMap[dpiMap.length - 1];
 }
-
-// Todo: write unit test for findNearestScaling
