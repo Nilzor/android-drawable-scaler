@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 
 configureDpiMap();
+configureLauncherIconDpis();
 
 // Parse command line input and validate
 var inFile = process.argv[2];
@@ -20,7 +21,8 @@ if (!widthInches || widthInches <= 0.0) {
 }
 
 // Find image width and determine DPI
-var cmdOut = ps.execSync('identify -format "%[fx:w]"  ' + inFile).toString().trim()
+// todo identify vs magic
+var cmdOut = ps.execSync('magick identify -format "%[fx:w]"  ' + inFile).toString().trim()
 var pixelWidth = parseInt(cmdOut);
 if (!pixelWidth || isNaN(pixelWidth)) {
 	console.error("Could not determine width of image.");
@@ -45,18 +47,26 @@ function createAllSmaller(inFile, sourcePxWidth, sourceScaling) {
 		// Determine new pixel width
 		var targetPxWidth = sourcePxWidth;
 		var factor = targetScaling.dpi / sourceScaling.dpi;
-		targetPxWidth = Math.round(sourcePxWidth * factor);
+		// targetPxWidth = Math.round(sourcePxWidth * factor); // TEMP COMMENT OUT LAUNCHER ICONB
+		
+		console.log("TARGET: " + targetScaling.name);
+		console.log ("liz: " , launcherIconSizes);
+		console.log ("liz of TARGET: " , launcherIconSizes[targetScaling.name]);
+		targetPxWidth = launcherIconSizes[targetScaling.name];
 
 		console.log("Writing " + targetFile + ", width: " + targetPxWidth + "px");
-		if (targetScaling.dpi >= sourceScaling.dpi) {  // True for first in 50% of cases
+		var tempVariable = false
+		if (tempVariable && targetScaling.dpi >= sourceScaling.dpi) {  
 			fs.writeFileSync(targetFile, fs.readFileSync(inFile));
 		} else { 
 			// Use imagemagick to rescale
-			var resizeCmdLine = "convert -resize " + targetPxWidth + " " + inFile + " " + targetFile;
+			// todo	either magick or convert
+			var resizeCmdLine = "magick " + inFile + " -resize " + targetPxWidth + " " + targetFile;
+			console.log("command line: " + resizeCmdLine);
 			ps.execSync(resizeCmdLine);
 		}
 		// Use optipng to minimize file size (lossless)
-		ps.execSync("optipng " + targetFile);
+		//ps.execSync("optipng " + targetFile);
 	}
 } 
 
@@ -106,4 +116,16 @@ function configureDpiMap() {
 			factor: 4.0
 		},
 	];
+}
+
+
+function configureLauncherIconDpis() {
+	global.launcherIconSizes = {
+		ldpi: 32,
+		mdpi: 48,
+		hdpi: 72,
+		xhdpi: 96,
+		xxhdpi: 144,
+		xxxhdpi: 192
+	}
 }
