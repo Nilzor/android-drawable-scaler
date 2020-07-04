@@ -3,38 +3,7 @@ var ps = require('child_process');
 var fs = require('fs');
 var path = require('path');
 
-global.dpiMap = [
-	{
-		name: 'ldpi',
-		dpi: '120',
-		factor: 0.75
-	},
-	{
-		name: 'mdpi',
-		dpi: '160',
-		factor: 1.0
-	},
-	{
-		name: 'hdpi',
-		dpi: '240',		
-		factor: 1.5
-	},
-	{
-		name: 'xhdpi',
-		dpi: '320',		
-		factor: 2.0
-	},
-	{
-		name: 'xxhdpi',
-		dpi: '480',		
-		factor: 3.0
-	},
-	{
-		name: 'xxxhdpi',
-		dpi: '640',		
-		factor: 4.0
-	},
-];
+configureDpiMap();
 
 // Parse command line input and validate
 var inFile = process.argv[2];
@@ -102,4 +71,39 @@ function findNearestScaling(dpi) {
 		}
 	}
 	return dpiMap[dpiMap.length - 1];
+}
+
+function configureDpiMap() {
+	global.dpiMap = [
+		{
+			name: 'ldpi',
+			dpi: '120',
+			factor: 0.75
+		},
+		{
+			name: 'mdpi',
+			dpi: '160',
+			factor: 1.0
+		},
+		{
+			name: 'hdpi',
+			dpi: '240',		
+			factor: 1.5
+		},
+		{
+			name: 'xhdpi',
+			dpi: '320',		
+			factor: 2.0
+		},
+		{
+			name: 'xxhdpi',
+			dpi: '480',		
+			factor: 3.0
+		},
+		{
+			name: 'xxxhdpi',
+			dpi: '640',		
+			factor: 4.0
+		},
+	];
 }
